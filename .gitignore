@@ -1,0 +1,28 @@
+# Sensitive local tokens and credentials
+.iliadbox_token.json
+
+# External reference libraries
+freebox-api/
+
+# PyInstaller & Build artifacts
+build/
+dist/
+*.spec
+Iliadbox.exe
+*.exe
+
+# Logs and runtime traces
+*.log
+iliadbox_app.log
+stdout.txt
+stderr.txt
+
+# Python cache & virtual environments
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+venv/
+.idea/
+.vscode/

@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Iliadbox Ultra Suite</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <!-- Cyber Background Glowing Orbs -->
+  <div class="glow-orb orb-1"></div>
+  <div class="glow-orb orb-2"></div>
+  <div class="cyber-grid-overlay"></div>
+
+  <div class="app-container">
+    <!-- Top Navigation Header -->
+    <header class="cyber-header">
+      <div class="header-brand">
+        <div class="brand-logo-hex">
+          <span class="pulse-ring"></span>
+          <svg viewBox="0 0 24 24" class="logo-icon" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+            <polyline points="2 17 12 22 22 17"></polyline>
+            <polyline points="2 12 12 17 22 12"></polyline>
+          </svg>
+        </div>
+        <div class="brand-titles">
+          <div class="brand-eyebrow">NETWORK SUITE</div>
+          <h1 class="brand-name">ILIADBOX ULTRA <span class="version-tag">WI-FI 7</span></h1>
+        </div>
+      </div>
+
+      <!-- Quick Telemetry Badges -->
+      <div class="header-status-ribbon">
+        <div class="ribbon-card" id="card-box-model">
+          <span class="ribbon-label">MODELLO</span>
+          <span class="ribbon-val" id="val-box-model">iliadbox (r1)</span>
+        </div>
+        <div class="ribbon-card" id="card-optical">
+          <span class="ribbon-label">SEGNALE OTTICO</span>
+          <span class="ribbon-val cyan-glow" id="val-optical-rx">-- dBm</span>
+        </div>
+        <div class="ribbon-card" id="card-wan-ip">
+          <span class="ribbon-label">IPV4 & NAT</span>
+          <span class="ribbon-val" id="val-wan-ip">Verifica...</span>
+        </div>
+        <div class="ribbon-card status-indicator" id="card-auth-status">
+          <span class="status-dot"></span>
+          <span class="status-text" id="val-auth-status">Autenticato</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Permission Warning Banner (Hidden by default) -->
+    <div id="permission-warning" class="alert-banner hidden">
+      <div class="alert-icon">⚠️</div>
+      <div class="alert-body">
+        <strong>Permesso di modifica impostazioni mancante sulla Iliadbox!</strong>
+        <p>Per applicare le ottimizzazioni con un click, apri <em>Parametri della Iliadbox ➔ Gestione degli accessi ➔ Applicazioni ➔ Iliadbox Ultra Suite</em> e spunta <strong>"Modifica delle impostazioni"</strong>.</p>
+      </div>
+      <div class="alert-actions" style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+        <button class="btn btn-sm btn-primary" onclick="openIliadboxAdmin()" title="Apre la pagina di gestione accessi su 192.168.1.254">🔗 Vai a Gestione Accessi (192.168.1.254)</button>
+        <button class="btn btn-sm btn-outline" onclick="checkAuthAndLoad()">🔄 Ricontrolla Permessi</button>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <nav class="cyber-tabs">
+      <button class="tab-btn active" data-tab="telemetry">
+        <span class="tab-icon">📊</span> Telemetria Live
+      </button>
+      <button class="tab-btn" data-tab="optimizer">
+        <span class="tab-icon">⚡</span> Centro Ottimizzazione
+      </button>
+      <button class="tab-btn" data-tab="before-after">
+        <span class="tab-icon">🔄</span> Before & After
+      </button>
+      <button class="tab-btn" data-tab="wifi-radar">
+        <span class="tab-icon">📡</span> Radar Wi-Fi 7 & Client
+      </button>
+      <button class="tab-btn" data-tab="benchmark">
+        <span class="tab-icon">⏱️</span> Live Benchmark
+      </button>
+    </nav>
+
+    <!-- MAIN TAB CONTENTS -->
+    <main class="cyber-content">
+      
+      <!-- TAB 1: TELEMETRIA LIVE -->
+      <section id="tab-telemetry" class="tab-pane active">
+        <div class="metrics-grid">
+          
+          <!-- Optical Power FTTH Card -->
+          <div class="cyber-card glass-panel col-span-4">
+            <div class="card-header">
+              <div class="card-title-group">
+                <span class="card-tag">FTTH SFP</span>
+                <h3>Potenza Ottica Ricevuta</h3>
+              </div>
+              <span class="badge badge-success" id="badge-optical-health">Segnale Ottimale</span>
+            </div>
+            <div class="gauge-container">
+              <div class="radial-gauge">
+                <div class="radial-val" id="gauge-sfp-rx">-21.36</div>
+                <div class="radial-unit">dBm (RX)</div>
+              </div>
+              <div class="gauge-meta">
+                <div class="meta-row">
+                  <span>Potenza TX Trasmessa:</span>
+                  <strong id="val-sfp-tx">+1.75 dBm</strong>
+                </div>
+                <div class="meta-row">
+                  <span>Range Ottimale di Linea:</span>
+                  <span class="dim">-8.0 dBm a -24.0 dBm</span>
+                </div>
+                <div class="meta-row">
+                  <span>Attenuazione Fibra:</span>
+                  <span class="text-emerald">Assente (Fibra Pulita)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Live Bandwidth & Rates -->
+          <div class="cyber-card glass-panel col-span-4">
+            <div class="card-header">
+              <div class="card-title-group">
+                <span class="card-tag">PROFILO EPON</span>
+                <h3>Traffico Istantaneo</h3>
+              </div>
+              <span class="badge badge-cyan" id="badge-link-profile">5 Gbps / 900 Mbps</span>
+            </div>
+            <div class="bandwidth-visualizer">
+              <div class="speed-pillar download">
+                <div class="pillar-label">DOWNLOAD</div>
+                <div class="pillar-speed" id="live-rate-down">0.0 <span class="unit">KB/s</span></div>
+                <div class="pillar-bar"><div class="pillar-fill" id="fill-rate-down" style="width: 15%"></div></div>
+              </div>
+              <div class="speed-pillar upload">
+                <div class="pillar-label">UPLOAD</div>
+                <div class="pillar-speed" id="live-rate-up">0.0 <span class="unit">KB/s</span></div>
+                <div class="pillar-bar"><div class="pillar-fill" id="fill-rate-up" style="width: 25%"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Hardware & Thermals -->
+          <div class="cyber-card glass-panel col-span-4">
+            <div class="card-header">
+              <div class="card-title-group">
+                <span class="card-tag">SYSTEM</span>
+                <h3>Stato Hardware & CPU</h3>
+              </div>
+              <span class="badge badge-purple" id="val-router-uptime">Uptime: 17h</span>
+            </div>
+            <div class="system-stats-grid">
+              <div class="stat-box">
+                <div class="stat-icon">🌡️</div>
+                <div class="stat-info">
+                  <span class="stat-label">CPU Temp</span>
+                  <strong class="stat-val" id="val-cpu-temp">42°C</strong>
+                </div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-icon">🌀</div>
+                <div class="stat-info">
+                  <span class="stat-label">Ventola</span>
+                  <strong class="stat-val" id="val-fan-rpm">Regolare</strong>
+                </div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-icon">🛡️</div>
+                <div class="stat-info">
+                  <span class="stat-label">Firmware</span>
+                  <strong class="stat-val" id="val-firmware">4.9.18.2</strong>
+                </div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-icon">⚡</div>
+                <div class="stat-info">
+                  <span class="stat-label">Overhead</span>
+                  <strong class="stat-val text-emerald" id="val-bloat-status">0% (Debloated)</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Switch Ethernet Physical Ports -->
+          <div class="cyber-card glass-panel col-span-6">
+            <div class="card-header">
+              <div class="card-title-group">
+                <span class="card-tag">SWITCH LAN</span>
+                <h3>Porte Ethernet Fisiche</h3>
+              </div>
+              <span class="badge badge-outline">Switch 2.5 GbE Integrato</span>
+            </div>
+            <div class="switch-ports-visual" id="switch-ports-container">
+              <!-- Rendered via JS -->
+              <div class="loading-spinner">Caricamento porte...</div>
+            </div>
+          </div>
+
+          <!-- MAP-E & IP Allocation -->
+          <div class="cyber-card glass-panel col-span-6">
+            <div class="card-header">
+              <div class="card-title-group">
+                <span class="card-tag">WAN IP</span>
+                <h3>Allocazione Porte IPv4 (MAP-E)</h3>
+              </div>
+              <span class="badge" id="badge-mape-status">Analisi...</span>
+            </div>
+            <div class="mape-details">
+              <div class="ip-row">
+                <span class="label">Indirizzo IPv4 Pubblico:</span>
+                <code class="val-code" id="val-public-ipv4">81.56.105.179</code>
+              </div>
+              <div class="ip-row">
+                <span class="label">Range Porte Assegnate:</span>
+                <code class="val-code text-cyan" id="val-port-range">57344 - 65535 (8.192 porte)</code>
+              </div>
+              <div class="ip-row">
+                <span class="label">Prefisso IPv6 Nativo:</span>
+                <code class="val-code text-purple" id="val-public-ipv6">2a01:e11:5004:a1b0::1</code>
+              </div>
+              <div class="port-bar-track">
+                <div class="port-bar-segment" id="port-bar-active" style="left: 87.5%; width: 12.5%;"></div>
+              </div>
+              <div class="port-legend">
+                <span>Porta 1</span>
+                <span>Porta 32768</span>
+                <span>Porta 65535</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- TAB 2: CENTRO OTTIMIZZAZIONE -->
+      <section id="tab-optimizer" class="tab-pane">
+        <div class="optimizer-layout">
+          
+          <!-- Master Action Card -->
+          <div class="cyber-card glass-panel master-action-card">
+            <div class="master-intro">
+              <div class="master-badge">⚡ TUNING ESTREMO 1-CLICK</div>
+              <h2>Ottimizza Tutta la Tua Iliadbox</h2>
+              <p>Applica simultaneamente i resolver Turbo DNS (IPv4 + IPv6), abilita UPnP IGD per il gaming competitivo, sblocca la massima efficienza Wi-Fi 7 e disattiva i demoni di background per azzerare il jitter.</p>
+            </div>
+            <div class="master-cta">
+              <button class="btn btn-cyber-pulse" id="btn-optimize-all" onclick="triggerOptimization('all')">
+                <span class="btn-icon">🚀</span> APPLICA TUTTO ADESSO
+              </button>
+            </div>
+          </div>
+
+          <!-- Individual Tuning Modules -->
+          <div class="modules-grid">
+            
+            <div class="cyber-card glass-panel module-card">
+              <div class="module-icon">🛡️</div>
+              <div class="module-content">
+                <h3>Turbo DNS (IPv4 + IPv6)</h3>
+                <p>Forza il server DHCP a distribuire direttamente Quad9 (9.9.9.9) e Cloudflare (1.1.1.1) scavalcando il relay interno da 75ms.</p>
+                <div class="module-status" id="status-turbo-dns">Verifica...</div>
+              </div>
+              <button class="btn btn-sm btn-outline" onclick="triggerOptimization('turbo_dns')">Riapplica DNS</button>
+            </div>
+
+            <div class="cyber-card glass-panel module-card">
+              <div class="module-icon">🎮</div>
+              <div class="module-content">
+                <h3>UPnP IGD (Open NAT Gaming)</h3>
+                <p>Apertura automatica dinamica delle porte per Nintendo Switch, PS5, Xbox e PC per evitare NAT Moderato o Type D.</p>
+                <div class="module-status" id="status-upnp">Verifica...</div>
+              </div>
+              <button class="btn btn-sm btn-outline" id="btn-toggle-upnp" onclick="toggleUpnp()">Attiva UPnP</button>
+            </div>
+
+            <div class="cyber-card glass-panel module-card">
+              <div class="module-icon">📶</div>
+              <div class="module-content">
+                <h3>Wi-Fi 7 Anti-Jitter</h3>
+                <p>Spegne il risparmio energetico DTIM delle antenne radio, eliminando i micro-sleep durante le partite competitive.</p>
+                <div class="module-status" id="status-wifi-tuning">Verifica...</div>
+              </div>
+              <button class="btn btn-sm btn-outline" onclick="triggerOptimization('wifi')">Massima Potenza</button>
+            </div>
+
+            <div class="cyber-card glass-panel module-card">
+              <div class="module-icon">🧹</div>
+              <div class="module-content">
+                <h3>CPU De-bloat</h3>
+                <p>Disattiva server FTP, DLNA e AirMedia se non usati, lasciando il 100% della CPU dedicata allo switch e alla fibra.</p>
+                <div class="module-status" id="status-debloat">Verifica...</div>
+              </div>
+              <button class="btn btn-sm btn-outline" onclick="triggerOptimization('debloat')">Libera CPU</button>
+            </div>
+
+          </div>
+
+          <!-- Cyberpunk Terminal Log Output -->
+          <div class="cyber-card glass-panel terminal-card">
+            <div class="terminal-header">
+              <div class="terminal-dots">
+                <span class="dot red"></span>
+                <span class="dot yellow"></span>
+                <span class="dot green"></span>
+              </div>
+              <span class="terminal-title">LIVE OPTIMIZATION LOGSTREAM</span>
+              <button class="btn-clear-term" onclick="clearTerminal()">Cancella Log</button>
+            </div>
+            <div class="terminal-body" id="terminal-output">
+              <div class="term-line system">[SYSTEM] Iliadbox Ultra Suite pronta.</div>
+              <div class="term-line info">[READY] Connesso con successo ad API v15. In attesa di comandi.</div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- TAB 3: BEFORE & AFTER COMPARISON -->
+      <section id="tab-before-after" class="tab-pane">
+        <div class="before-after-header">
+          <h2>Confronto Prestazioni: Fabbrica vs Ottimizzato</h2>
+          <p>Tutti i miglioramenti applicati alla tua Iliadbox a confronto con la configurazione di fabbrica predefinita.</p>
+        </div>
+
+        <div class="comparison-grid" id="comparison-cards-container">
+          <!-- Rendered dynamically by JS -->
+          <div class="loading-spinner">Calcolo metriche comparative...</div>
+        </div>
+      </section>
+
+      <!-- TAB 4: RADAR WI-FI 7 & CLIENTS -->
+      <section id="tab-wifi-radar" class="tab-pane">
+        <div class="wifi-overview-row">
+          <div class="cyber-card glass-panel mini-wifi-box">
+            <span class="label">BANDA 5 GHz / WI-FI 7</span>
+            <strong class="val text-cyan">Canale 128 (DFS) | 160 MHz</strong>
+          </div>
+          <div class="cyber-card glass-panel mini-wifi-box">
+            <span class="label">BANDA 2.4 GHz</span>
+            <strong class="val">Canale Auto | 20 MHz</strong>
+          </div>
+          <div class="cyber-card glass-panel mini-wifi-box">
+            <span class="label">DISPOSITIVI CONNESSI</span>
+            <strong class="val text-emerald" id="val-stations-count">-- Dispositivi</strong>
+          </div>
+        </div>
+
+        <div class="cyber-card glass-panel client-table-card">
+          <div class="card-header">
+            <h3>Dispositivi Connessi in Wi-Fi (Client Link Rate)</h3>
+            <button class="btn btn-sm btn-outline" onclick="loadStatus()">Aggiorna Client</button>
+          </div>
+          <div class="table-responsive">
+            <table class="cyber-table">
+              <thead>
+                <tr>
+                  <th>Dispositivo / Hostname</th>
+                  <th>Segnale (RSSI)</th>
+                  <th>Velocità Negoziata</th>
+                  <th>Generazione Wi-Fi</th>
+                  <th>Banda</th>
+                </tr>
+              </thead>
+              <tbody id="wifi-stations-tbody">
+                <tr><td colspan="5" class="text-center">Caricamento dispositivi...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 5: LIVE BENCHMARK -->
+      <section id="tab-benchmark" class="tab-pane">
+        <div class="benchmark-layout">
+          <div class="cyber-card glass-panel">
+            <div class="card-header">
+              <div class="card-title-group">
+                <span class="card-tag">BENCHMARK</span>
+                <h3>Test di Latenza in Tempo Reale</h3>
+              </div>
+              <button class="btn btn-cyber" id="btn-run-benchmark" onclick="runBenchmark()">
+                <span class="btn-icon">⚡</span> Avvia Benchmark Live
+              </button>
+            </div>
+            <div class="benchmark-results-container" id="benchmark-container">
+              <p class="dim text-center" style="padding: 40px 0;">Premi "Avvia Benchmark Live" per testare latenze gateway, IXP Milano/Roma, server gaming e DNS resolver.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Interactive Pairing Modal (Shows when not authenticated) -->
+  <div class="modal-overlay hidden" id="pairing-modal">
+    <div class="cyber-modal glass-panel">
+      <div class="modal-header">
+        <div class="brand-logo-hex mini">
+          <span class="pulse-ring"></span>
+        </div>
+        <h2>Associazione con la tua Iliadbox</h2>
+      </div>
+      <div class="modal-body">
+        <p>Per consentire all'applicazione di monitorare e ottimizzare la tua connessione, è richiesta una conferma iniziale di sicurezza.</p>
+        
+        <!-- Animated representation of Iliadbox OLED Screen -->
+        <div class="oled-simulator">
+          <div class="oled-frame">
+            <div class="oled-screen" id="oled-screen-text">
+              <div class="oled-title">ILIADBOX OS</div>
+              <div class="oled-msg">Richiesta di autorizzazione per:</div>
+              <div class="oled-app">Iliadbox Ultra Suite</div>
+              <div class="oled-arrow">👉 PREMI CONFERMA O FRECCIA DESTRA 👉</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="pairing-progress">
+          <div class="spinner-cyber"></div>
+          <span id="pairing-status-text">In attesa che tu prema CONFERMA sul display della Iliadbox...</span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closePairingModal()">Annulla</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
